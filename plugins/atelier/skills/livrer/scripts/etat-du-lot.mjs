@@ -60,8 +60,10 @@ const ecartALAttendu = (mode, { exit, cause }) => {
   return cause === "chargement" ? "la contre-preuve rougit au chargement, pas sur l'assertion de la règle" : null;
 };
 
+const geleeSousLaV2 = (step) => !Object.hasOwn(step, "avant") && !step.contre_preuve;
+
 const griefsDeLaContrePreuve = (step, mode, racine) => {
-  if ((step.prod ?? []).length === 0) return [];
+  if ((step.prod ?? []).length === 0 || geleeSousLaV2(step)) return [];
   const { contre_preuve: contrePreuve } = step;
   if (!contrePreuve) return [`${step.id} sans contre-preuve (ETAT <task list> --contre-preuve ${step.id})`];
   const ecart = ecartALAttendu(mode, contrePreuve);

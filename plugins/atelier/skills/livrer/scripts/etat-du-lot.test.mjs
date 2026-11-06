@@ -34,6 +34,7 @@ const lotVert = (racine, mode = "bug") => {
         prod: ["heures.mjs"],
         etat: "vert",
         sha_test: empreinteDe(racine, "heures.test.mjs"),
+        avant: { "heures.mjs": null },
         preuve: "ROUGE … · VERT node --test → EXIT=0",
       },
     ],
@@ -269,6 +270,16 @@ test("une contre-preuve interrompue sans restauration se restaure au prochain ap
   assert.match(sortie.stdout, /restauré après une contre-preuve interrompue : .*heures\.mjs/);
   assert.equal(readFileSync(join(racine, "heures.mjs"), "utf8"), "export const heures = () => 8;\n");
   assert.equal(existsSync(sauvegarde), false);
+});
+
+test("une step gelee sous la v2, sans etat d'avant, reste jugee sans contre-preuve ; une step gelee par --gel l'exige", () => {
+  const racine = depot();
+  const lot = lotVert(racine);
+  delete lot.steps[0].contre_preuve;
+  delete lot.steps[0].avant;
+  assert.deepEqual(griefsDuLivrable(lot, racine), []);
+  lot.steps[0].avant = { "heures.mjs": null };
+  assert.match(griefsDuLivrable(lot, racine).join("\n"), /S1 sans contre-preuve/);
 });
 
 test("une step verte sans contre-preuve, ou modifiee depuis, empeche le LIVRÉ", () => {
