@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: reprise
+description: Après une compaction ou un crash, la session retrouve la task list ouverte du dépôt, sa phase et sa prochaine step, sans en créer une autre.
+tags: [livrer, leger]
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    La session précédente a crashé en plein lot. Où en est le lot en cours, et quelle est la prochaine step ? Ne modifie rien.

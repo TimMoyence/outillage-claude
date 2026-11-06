@@ -1,0 +1,18 @@
+outillage-claude
+Copyright (c) 2026 Tim Moyence
+
+Everything in this repository is licensed under the MIT License (see LICENSE),
+except the six directories listed below.
+
+plugins/atelier/skills/gitnexus-cli/
+plugins/atelier/skills/gitnexus-debugging/
+plugins/atelier/skills/gitnexus-exploring/
+plugins/atelier/skills/gitnexus-guide/
+plugins/atelier/skills/gitnexus-impact-analysis/
+plugins/atelier/skills/gitnexus-refactoring/
+
+These skills derive from GitNexus (https://www.npmjs.com/package/gitnexus) and
+remain under the GitNexus license, PolyForm Noncommercial License 1.0.0
+(https://polyformproject.org/licenses/noncommercial/1.0.0/). They are NOT
+covered by the MIT License. Commercial use of these files requires a license
+from the GitNexus authors.

@@ -1,0 +1,10 @@
+{
+  "name": "outillage-claude",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:unitaire && npm run test:evals",
+    "test:unitaire": "node --test plugins/atelier/hooks/*.test.mjs plugins/atelier/skills/*/scripts/*.test.mjs && claude plugin validate . --strict",
+    "test:evals": "claude plugin eval plugins/atelier --scaffold --trust-plugin --allow-tools Write Edit Bash --concurrency 3 --threshold 0.67 --max-cost-usd 25 --no-publish"
+  }
+}

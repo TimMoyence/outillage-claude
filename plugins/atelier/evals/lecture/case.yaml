@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: lecture
+description: Une simple lecture ne déclenche pas livrer.
+tags: [livrer, leger]
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 20
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Explique-moi comment heuresVendables calcule le nombre d'heures d'une journée.

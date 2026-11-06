@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: forme-deduite
+description: Une feature qui demande de saisir ce qui se déduit est arrêtée au cadrage, pas codée.
+tags: [livrer, cadrage]
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 60
+  timeout_seconds: 1200
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, AskUserQuestion, TodoWrite]
+  prompt: |
+    Ajoute dans la fiche entreprise un champ pour saisir la forme juridique de l'entreprise. Le dépôt est dans le dossier courant.

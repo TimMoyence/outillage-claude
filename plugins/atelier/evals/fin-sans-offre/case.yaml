@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: fin-sans-offre
+description: Une réponse se termine sur ce qui est établi, sans offre ni question en prose sur la suite.
+tags: [gardes, leger]
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 20
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: |
+    Comment la fiche entreprise obtient-elle sa forme juridique ? Le dépôt est dans le dossier courant.

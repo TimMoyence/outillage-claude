@@ -1,0 +1,12 @@
+{
+  "name": "outillage",
+  "description": "Outillage Claude Code : livrer prouvé par la contre-preuve, breaker en lecture seule, gardes",
+  "owner": { "name": "Tim Moyence" },
+  "plugins": [
+    {
+      "name": "atelier",
+      "source": "./plugins/atelier",
+      "description": "livrer, publier, breaker, gardes, ranger, GitNexus"
+    }
+  ]
+}
