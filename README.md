@@ -27,6 +27,7 @@ Marketplace Claude Code qui porte un plugin, **atelier** : une méthode de livra
 | skill `livrer` | Seul chemin d'écriture du code produit. Brainstorm puis contrat validé pour une feature ; task list JSON d'un comportement par ligne ; test rouge, test figé avec la production d'avant la step, contre-preuve qui rejoue le test sur cet état d'avant ; breaker en arrière-plan sur chaque step `MONEY`, `SECURITY` ou `TENANT`, test de propriétés pour `MONEY` ; audit mesuré ; breaker final plafonné à trois passes. |
 | skill `publier` | Revalide le diff, commite par lots, pousse et ouvre la PR sur demande, dresse l'inventaire à 100 % de ce qui part, écrit le mail de mise en production lisible dans Outlook. La charte du mail vient du `.claude/publier.md` du dépôt. |
 | skill `ranger` | Déplace des fichiers d'un dépôt TypeScript ou Angular en réécrivant chaque chemin qui les désigne. |
+| skill `memoire` | Convention des carnets de mémoire de Claude Code, et vérificateur qui refuse une fiche non routée, un lien mort, un chemin cité absent ou un numéro de ligne. |
 | agent `breaker` | Cherche le plus petit contre-exemple, en mode contrat, step ou lot. Lecture seule, garantie par un hook. |
 | `etat-du-lot.mjs` | Juge d'une task list : `LIVRABLE` ou la liste des manques. Il rejoue aussi la contre-preuve. |
 | hook `reprise` (SessionStart) | Crée les réglages, nomme l'humain qui décide, réinjecte les task lists ouvertes du dépôt avec leur phase et leur prochaine step, après une compaction ou un crash. |

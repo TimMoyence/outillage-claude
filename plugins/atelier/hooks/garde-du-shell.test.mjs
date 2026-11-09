@@ -1,17 +1,16 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { PROFIL_GENERIQUE, profilDe } from "./depots.mjs";
-import { dossierDeLaCommande, ecritureDuShell, reecritureDuShell, refusDuShell } from "./garde-du-shell.mjs";
+import { profilDe } from "./depots.mjs";
+import { IMAGE_DE_LA_CI, RACINE, depotGit, juge, passe, refuse } from "./essais-de-la-garde.mjs";
+import { dossierDeLaCommande, ecritureDuShell, reecritureDuShell } from "./garde-du-shell.mjs";
 
-const RACINE = "/depot";
 const SCRATCHPAD = `/private/tmp/claude-${process.getuid()}/-depot/session/scratchpad`;
-const IMAGE_DE_LA_CI = "mcr.microsoft.com/playwright:v1.61.1-noble";
 const PROFILS = {
   compta: {
     cible:
@@ -37,31 +36,8 @@ const PROFILS = {
 const COMPTA = profilDe("compta", PROFILS);
 const BOUTIQUE = profilDe("boutique", PROFILS);
 
-const juge = (commande, options = {}) =>
-  refusDuShell(commande, {
-    racine: RACINE,
-    cwd: RACINE,
-    profil: PROFIL_GENERIQUE,
-    humain: "Tim",
-    processus: () => [],
-    nonSuivies: () => [],
-    imagesDeLaCi: () => [IMAGE_DE_LA_CI],
-    ...options,
-  });
-const passe = (commandes, options) => {
-  for (const commande of commandes) assert.equal(juge(commande, options), null, `${commande} a ete refusee a tort`);
-};
-const refuse = (commandes, motif, options) => {
-  for (const commande of commandes) assert.match(juge(commande, options) ?? "", motif, `${commande} a franchi le garde`);
-};
 const cpt = { profil: COMPTA };
 const btq = { profil: BOUTIQUE };
-const depotGit = () => {
-  const depot = mkdtempSync(join(tmpdir(), "garde-du-shell-"));
-  spawnSync("git", ["init", "-q", depot]);
-  writeFileSync(join(depot, ".gitignore"), "node_modules/\n");
-  return depot;
-};
 
 test("les formes ciblees de compta passent", () => {
   passe(

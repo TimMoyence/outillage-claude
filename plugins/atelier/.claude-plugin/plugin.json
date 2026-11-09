@@ -1,7 +1,7 @@
 {
   "name": "atelier",
   "version": "2.0.0",
-  "description": "Méthode de livraison prouvée (skills livrer et publier), agent breaker en lecture seule, gardes du shell, de la réponse et de reprise, skill ranger, skills GitNexus.",
+  "description": "Méthode de livraison prouvée (skills livrer et publier), agent breaker en lecture seule, gardes du shell, de la réponse et de reprise, skills ranger et memoire, skills GitNexus.",
   "author": { "name": "Tim Moyence" },
   "repository": "https://github.com/TimMoyence/outillage-claude",
   "license": "MIT AND PolyForm-Noncommercial-1.0.0",
