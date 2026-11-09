@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -237,6 +237,14 @@ test("un LIVRÉ n'existe que sur une task list livrable", () => {
   lot.steps[0].etat = "rouge";
   writeFileSync(tasklist, JSON.stringify(lot));
   assert.match(refusDuLivre(rapportLivre(tasklist), racine) ?? "", /S1 rouge/);
+});
+
+test("un LIVRÉ se juge dans le dépôt que nomme sa task list, même quand la session parle depuis son dossier parent", () => {
+  const { racine, tasklist, lot } = depotLivre();
+  writeFileSync(tasklist, JSON.stringify({ ...lot, depot: basename(racine) }));
+  assert.equal(refusDuLivre(rapportLivre(tasklist), dirname(racine)), null);
+  writeFileSync(join(racine, "a.mjs"), "export const a = 2;\n");
+  assert.match(refusDuLivre(rapportLivre(tasklist), dirname(racine)) ?? "", /S1 a bougé depuis sa contre-preuve/);
 });
 
 test("le hook refuse un LIVRÉ non livrable, et ne rappelle pas l'audit sur un LIVRÉ livrable", () => {

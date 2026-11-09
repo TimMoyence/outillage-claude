@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { griefsDuLivrable, lotsDe } from "../skills/livrer/scripts/etat-du-lot.mjs";
+import { griefsDuLivrable, lotsDe, racineDuLot } from "../skills/livrer/scripts/etat-du-lot.mjs";
 import { depotDe } from "./depots.mjs";
 import { ACTIVITE_MS, fichiersDuTour, fichiersTenusParLesVoisines, skillInvoquee, transcriptionDe } from "./fichiers-du-tour.mjs";
 import { HUMAIN_PAR_DEFAUT, reglagesDe } from "./reglages.mjs";
@@ -144,7 +144,7 @@ export const refusDuLivre = (message, racine) => {
   const chemin = tasklistDuRapport(message);
   if (!chemin || !existsSync(chemin))
     return "LIVRÉ sans task list lisible : le rapport cite `JSON : <chemin>.tasklist.json`, que `etat-du-lot.mjs` juge LIVRABLE.";
-  const griefs = lotsDe(chemin).flatMap((lot) => griefsDuLivrable(lot, racine).map((grief) => `${lot.lot} · ${grief}`));
+  const griefs = lotsDe(chemin).flatMap((lot) => griefsDuLivrable(lot, racineDuLot(lot, chemin, racine)).map((grief) => `${lot.lot} · ${grief}`));
   return griefs.length === 0 ? null : `LIVRÉ refusé, la task list ne le porte pas : ${griefs.join(" ; ")}. Le travail continue jusqu'à LIVRABLE.`;
 };
 

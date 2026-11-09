@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, realpathSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -336,6 +336,15 @@ test("--empreinte suivi d'une step imprime l'empreinte de la step", () => {
   writeFileSync(chemin, JSON.stringify(lot));
   const sortie = spawnSync(process.execPath, [SCRIPT, chemin, "--empreinte", "S1"], { cwd: racine, encoding: "utf8" });
   assert.equal(sortie.stdout.trim(), empreinteDeLaStep(lot.steps[0], racine));
+});
+
+test("le juge se joue dans le dépôt que nomme la task list, même lancé depuis son dossier parent", () => {
+  const racine = depot();
+  const tasklist = join(dirname(racine), `${basename(racine)}-pause.tasklist.json`);
+  writeFileSync(tasklist, JSON.stringify({ ...lotVert(racine), depot: basename(racine) }));
+  assert.equal(etat(dirname(racine), tasklist).stdout, "LIVRABLE\n");
+  writeFileSync(join(racine, "heures.mjs"), "export const heures = () => 9;\n");
+  assert.match(etat(dirname(racine), tasklist).stdout, /S1 a bougé depuis sa contre-preuve/);
 });
 
 test("un lot vert, audité, CLEAR sur son empreinte actuelle est livrable", () => {

@@ -3,8 +3,10 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { closeSync, existsSync, mkdtempSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { depotDe } from "../../../hooks/depots.mjs";
 
 const AUDIT = ["shortstat", "duplications", "jumelles"];
 const RISQUES_BREAKES = ["MONEY", "SECURITY", "TENANT"];
@@ -133,7 +135,10 @@ const lotsDuDocument = (document) => (Array.isArray(document.lots) ? document.lo
 
 export const lotsDe = (chemin) => lotsDuDocument(documentDe(chemin));
 
-const racineDe = (dossier) => spawnSync("git", ["-C", dossier, "rev-parse", "--show-toplevel"], { encoding: "utf8" }).stdout?.trim() || dossier;
+export const racineDuLot = (lot, tasklist, dossier) => {
+  const [ici, voisin] = [dossier, join(dirname(resolve(tasklist)), lot.depot ?? "")].map((candidat) => depotDe(candidat, {}));
+  return [ici, voisin].find(({ nom }) => nom === lot.depot)?.racine ?? ici.racine;
+};
 
 const encode = (chemin) => (existsSync(chemin) ? readFileSync(chemin).toString("base64") : null);
 
@@ -215,7 +220,7 @@ const empreinteDeLId = (lots, id, racine) => {
 
 if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [chemin, option, id] = process.argv.slice(2);
-  const racine = racineDe(process.cwd());
+  const racine = racineDuLot(lotsDe(chemin)[0], chemin, process.cwd());
   const restaures = restaurerUneContrePreuveInterrompue(chemin);
   if (restaures.length > 0) process.stdout.write(`restauré après une contre-preuve interrompue : ${restaures.join(", ")}\n`);
   const commandes = { "--gel": geler, "--contre-preuve": contrePreuve };
