@@ -4,7 +4,7 @@
 
 1. Index GitNexus frais : `status`, sinon `analyze --index-only` en arrière-plan, sans le demander.
 2. **Racines** : un `context` pour situer, un `impact` par racine à modifier, lu à `direct`.
-3. **L'existant** : avant d'écrire un composant, un calcul, un port ou un faux, cherche celui qui existe (`query`, `git grep -n -w` du concept, du libellé, de l'`aria-label`, la commande de doublons du dépôt). Trouvé, il se réutilise ; recopié une fois, il s'extrait.
+3. **L'existant** : avant d'écrire un composant, un calcul, un port ou un faux, cherche celui qui existe par le sens, pas seulement par le nom (`query`, `git grep -n -w` du concept, du libellé, de l'`aria-label`, la mesure par forme de la passe finale). Trouvé, il se réutilise avec sa garde ; recopié une fois, il s'extrait.
 4. **Écrivains et consommateurs** de chaque donnée ou composant touché : chacun entre au lot.
 5. **Retrait ou renommage** : `git grep -n -w <nom>`, puis chaque ancienne valeur littérale ; jamais tronqué par `head`.
 6. `risk: UNKNOWN` ou zéro appelant se croise au `grep` avant de conclure.
@@ -42,7 +42,7 @@
 
 `S(n+1)` ne commence pas avant que `S(n)` porte sa preuve. Le breaker d'une step à risque tourne en arrière-plan pendant que la step suivante avance.
 
-1. **Écris le test.** Il parle produit : il monte l'écran, appelle le cas d'usage, joue la route. Ni forme de fichier, ni compteur, ni convention. Son nom porte `ref`. Un refus se grave par sa phrase entière, après le cas limite accepté ; une assertion de texte se borne à sa région ; une absence assertée s'accompagne d'une présence.
+1. **Écris le test.** Il parle produit : il monte l'écran, appelle le cas d'usage, joue la route. Ni forme de fichier, ni compteur, ni convention. Son nom porte `ref`. Une fonction publique que la step fait naître reçoit en plus sa petite spec, listée dans `carte.tests`, qui l'appelle sur ses cas limites. Un refus se grave par sa phrase entière, après le cas limite accepté ; une assertion de texte se borne à sa région ; une absence assertée s'accompagne d'une présence.
 2. **Joue `cmd`** et exige le bon rouge : une assertion métier. Import, compilation, fixture ou timeout ne sont pas un rouge (un module neuf passe par un squelette exporté qui rend une valeur neutre). Les attendus viennent de la fixture ou du juge, jamais d'un calcul de tête. Un vert d'emblée en `feature` ou `bug` signale une découpe fausse ; quand le code précède le test, défais la ligne, constate le rouge, remets-la. En `refactor`, le test fige l'existant et il est vert.
 3. **Gèle la step** : formatte, linte le test, liste dans `prod` chaque fichier que la step va créer ou modifier (un module neuf existe déjà sous la forme de son squelette exporté : hors `refactor`, le gel refuse un fichier absent), puis `ETAT <task list> --gel Sn`, qui écrit `sha_test` et photographie dans `avant` la production telle qu'elle est avant la step. Un fichier ajouté à `prod` plus tard demande de regeler.
 4. **Le plus petit code de production** qui rend le test vert, puis linte la step. Ni le test de la step, ni le seuil ou l'inventaire d'un test voisin ne bougent.

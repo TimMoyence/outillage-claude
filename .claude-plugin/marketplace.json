@@ -6,7 +6,7 @@
     {
       "name": "atelier",
       "source": "./plugins/atelier",
-      "description": "livrer, publier, breaker, gardes, ranger, GitNexus"
+      "description": "livrer, cartographier, publier, breaker, gardes, ranger, GitNexus"
     }
   ]
 }

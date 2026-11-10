@@ -14,7 +14,7 @@ const depot = () => {
   const racine = realpathSync(mkdtempSync(join(tmpdir(), "etat-du-lot-")));
   spawnSync("git", ["init", "-q", racine]);
   writeFileSync(join(racine, "heures.mjs"), "export const heures = () => 8;\n");
-  writeFileSync(join(racine, "heures.test.mjs"), "test('pause', () => {});\n");
+  writeFileSync(join(racine, "heures.test.mjs"), "test('pause', () => heures());\n");
   return racine;
 };
 
@@ -383,6 +383,33 @@ test("sans audit mesuré, pas de LIVRÉ", () => {
   const lot = lotVert(racine);
   lot.final.audit = { shortstat: "1 file changed" };
   assert.match(griefsDuLivrable(lot, racine).join("\n"), /audit incomplet : duplications, jumelles/);
+});
+
+test("une fonction exportée que la step fait naître exige une spec qui l'appelle, au-delà du test du lecteur", () => {
+  const racine = depot();
+  writeFileSync(
+    join(racine, "heures.mjs"),
+    "export const heures = () => 8;\nexport async function pauseDuJour(jour) { return 0; }\nexport class Planning {}\nexport const ecart = async <T>(a: T): Promise<T> => a;\nexport const SEUIL = 4;\n",
+  );
+  const lot = lotVert(racine);
+  const griefs = griefsDuLivrable(lot, racine).join("\n");
+  assert.match(griefs, /S1 : fonction neuve pauseDuJour \(heures\.mjs\) sans spec qui l'appelle/);
+  assert.match(griefs, /S1 : fonction neuve Planning \(heures\.mjs\)/);
+  assert.match(griefs, /S1 : fonction neuve ecart \(heures\.mjs\)/);
+  assert.doesNotMatch(griefs, /SEUIL|neuve heures /);
+  writeFileSync(join(racine, "pause.test.mjs"), "test('pauseDuJour · jour vide', () => { pauseDuJour(); new Planning(); ecart(1); });\n");
+  lot.carte.tests.push("pause.test.mjs");
+  lot.final.breaker.empreinte = empreinteDuLot(lot, racine);
+  assert.deepEqual(griefsDuLivrable(lot, racine), []);
+});
+
+test("une fonction exportée qui existait avant la step n'exige pas de spec neuve", () => {
+  const racine = depot();
+  const source = "export const heures = () => 8;\nexport function pauseDuJour() { return 0; }\n";
+  writeFileSync(join(racine, "heures.mjs"), source);
+  const lot = lotVert(racine);
+  lot.steps[0].avant = { "heures.mjs": Buffer.from(source).toString("base64") };
+  assert.deepEqual(griefsDuLivrable(lot, racine), []);
 });
 
 test("un audit et un breaker encore nuls se jugent en griefs, sans planter", () => {

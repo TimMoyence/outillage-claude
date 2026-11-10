@@ -12,7 +12,7 @@ const AUDIT = ["shortstat", "duplications", "jumelles"];
 const RISQUES_BREAKES = ["MONEY", "SECURITY", "TENANT"];
 const PROPRIETE = /\bfc\.(?:assert|property|asyncProperty)\b|from\s+["'](?:fast-check|@fast-check\/[\w-]+)["']|@given\(/;
 
-const cheminDe = (reference) => String(reference ?? "").split(" :: ")[0].trim();
+export const cheminDe = (reference) => String(reference ?? "").split(" :: ")[0].trim();
 
 const empreinteDuFichier = (racine, chemin) => {
   if (!existsSync(join(racine, chemin))) return "absent";
@@ -75,6 +75,8 @@ const griefsDeLaContrePreuve = (step, mode, racine) => {
   ];
 };
 
+const contenuDe = (racine, chemin) => (chemin && existsSync(join(racine, chemin)) ? readFileSync(join(racine, chemin), "utf8") : "");
+
 const griefsDesRisques = (step, racine) => {
   const risques = (step.risques ?? []).filter((risque) => RISQUES_BREAKES.includes(risque));
   if (risques.length === 0) return [];
@@ -85,7 +87,7 @@ const griefsDesRisques = (step, racine) => {
       ? []
       : !proprietes
         ? [`${nommes} sans test de propriétés (fast-check) : bornes, zéro, arrondis, sommes qui se recoupent`]
-        : existsSync(join(racine, proprietes)) && PROPRIETE.test(readFileSync(join(racine, proprietes), "utf8"))
+        : PROPRIETE.test(contenuDe(racine, proprietes))
           ? []
           : [`${step.id} : ${proprietes} ne contient aucune propriété (fast-check)`]),
     ...(step.breaker?.status !== "CLEAR"
@@ -96,7 +98,27 @@ const griefsDesRisques = (step, racine) => {
   ];
 };
 
-const griefsDeLaStep = (step, mode, racine) => {
+const EXPORT_DE_FONCTION =
+  /^export\s+(?:default\s+)?(?:abstract\s+)?(?:async\s+)?(?:function\*?\s+([\w$]+)|class\s+([\w$]+)|const\s+([\w$]+)\s*(?::[^=]+)?=\s*(?:async\b\s*)?(?:function\b|(?:<[^>]*>\s*)?\(|[\w$]+\s*=>))/gm;
+
+const fonctionsExportees = (source) => new Set([...source.matchAll(EXPORT_DE_FONCTION)].map((trouve) => trouve[1] ?? trouve[2] ?? trouve[3]));
+
+const testsDuLot = (lot, racine) =>
+  [...new Set([...(lot.carte?.tests ?? []), ...(lot.steps ?? []).flatMap((step) => [cheminDe(step.test), cheminDe(step.proprietes)])])]
+    .map((chemin) => contenuDe(racine, chemin))
+    .join("\n");
+
+const appelee = (nom, tests) => new RegExp(`(?<![\\w$])${nom.replaceAll("$", "\\$")}(?![\\w$])`).test(tests);
+
+const griefsDesSpecs = (step, tests, racine) =>
+  Object.entries(step.avant ?? {}).flatMap(([fichier, avant]) => {
+    const anciennes = fonctionsExportees(avant === null ? "" : Buffer.from(avant, "base64").toString("utf8"));
+    return [...fonctionsExportees(contenuDe(racine, fichier))]
+      .filter((nom) => !anciennes.has(nom) && !appelee(nom, tests))
+      .map((nom) => `${step.id} : fonction neuve ${nom} (${fichier}) sans spec qui l'appelle : une petite spec ferme ses cas limites`);
+  });
+
+const griefsDeLaStep = (step, mode, racine, tests) => {
   if (step.etat !== "vert") return [`${step.id} ${step.etat ?? "sans état"}`];
   return [
     ...(step.preuve ? [] : [`${step.id} vert sans preuve`]),
@@ -107,6 +129,7 @@ const griefsDeLaStep = (step, mode, racine) => {
         : [`${step.id} : le test a bougé depuis son gel`]),
     ...griefsDeLaContrePreuve(step, mode, racine),
     ...griefsDesRisques(step, racine),
+    ...griefsDesSpecs(step, tests, racine),
   ];
 };
 
@@ -123,11 +146,14 @@ const griefsDeLaFin = (lot, racine) => {
   ];
 };
 
-export const griefsDuLivrable = (lot, racine) => [
-  ...griefsDuContrat(lot),
-  ...((lot.steps ?? []).length === 0 ? ["aucune step"] : lot.steps.flatMap((step) => griefsDeLaStep(step, lot.mode, racine))),
-  ...griefsDeLaFin(lot, racine),
-];
+export const griefsDuLivrable = (lot, racine) => {
+  const tests = testsDuLot(lot, racine);
+  return [
+    ...griefsDuContrat(lot),
+    ...((lot.steps ?? []).length === 0 ? ["aucune step"] : lot.steps.flatMap((step) => griefsDeLaStep(step, lot.mode, racine, tests))),
+    ...griefsDeLaFin(lot, racine),
+  ];
+};
 
 const documentDe = (chemin) => JSON.parse(readFileSync(chemin, "utf8"));
 

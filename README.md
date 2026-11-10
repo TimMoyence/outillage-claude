@@ -24,12 +24,14 @@ Marketplace Claude Code qui porte un plugin, **atelier** : une méthode de livra
 
 | Élément | Rôle |
 |---|---|
-| skill `livrer` | Seul chemin d'écriture du code produit. Brainstorm puis contrat validé pour une feature ; task list JSON d'un comportement par ligne ; test rouge, test figé avec la production d'avant la step, contre-preuve qui rejoue le test sur cet état d'avant ; breaker en arrière-plan sur chaque step `MONEY`, `SECURITY` ou `TENANT`, test de propriétés pour `MONEY` ; audit mesuré ; breaker final plafonné à trois passes. |
+| skill `livrer` | Seul chemin d'écriture du code produit. Brainstorm puis contrat validé pour une feature ; task list JSON d'un comportement par ligne ; test rouge, test figé avec la production d'avant la step, contre-preuve qui rejoue le test sur cet état d'avant ; breaker en arrière-plan sur chaque step `MONEY`, `SECURITY` ou `TENANT`, test de propriétés pour `MONEY` ; spec exigée pour chaque fonction exportée neuve ; audit mesuré (doublons par forme d'AST, formules et gardes jumelles) ; breaker final plafonné à trois passes. |
+| skill `cartographier` | Carte JSON de tous les parcours e2e, rôle × écran × geste, permis ou refusé, cas de casse compris ; breakers en mode parcours pour les cas oubliés ; `couverture.mjs` juge la couverture ; chaque trou devient un lot `livrer`. |
 | skill `publier` | Revalide le diff, commite par lots, pousse et ouvre la PR sur demande, dresse l'inventaire à 100 % de ce qui part, écrit le mail de mise en production lisible dans Outlook. La charte du mail vient du `.claude/publier.md` du dépôt. |
 | skill `ranger` | Déplace des fichiers d'un dépôt TypeScript ou Angular en réécrivant chaque chemin qui les désigne. |
 | skill `memoire` | Convention des carnets de mémoire de Claude Code, et vérificateur qui refuse une fiche non routée, un lien mort, un chemin cité absent ou un numéro de ligne. |
-| agent `breaker` | Cherche le plus petit contre-exemple, en mode contrat, step ou lot. Lecture seule, garantie par un hook. |
+| agent `breaker` | Cherche le plus petit contre-exemple, en mode contrat, step, lot ou parcours. Lecture seule, garantie par un hook. |
 | `etat-du-lot.mjs` | Juge d'une task list : `LIVRABLE` ou la liste des manques. Il rejoue aussi la contre-preuve. |
+| `couverture.mjs` | Juge d'une carte de parcours : `COUVERT` ou chaque rôle, geste et cas sans test e2e réel. |
 | hook `reprise` (SessionStart) | Crée les réglages, nomme l'humain qui décide, réinjecte les task lists ouvertes du dépôt avec leur phase et leur prochaine step, après une compaction ou un crash. |
 | hook `garde-du-shell` (PreToolUse) | Refuse, en nommant la forme qui passe : verdict lu derrière un pipe sans `pipefail`, suite complète hors commit, heredoc qui nourrit un interpréteur, `sed -i`, `git add -A` sur un arbre partagé, push ou merge sans demande de l'humain, et d'autres. |
 | hook `garde-de-la-reponse` (Stop) | Refuse une fin de tour qui pose une question en prose, fait une offre, range un rouge chez autrui ou affirme sans mesurer ; refuse un `LIVRÉ` que le juge ne porte pas ; supprime la task list d'un `LIVRÉ` accepté. |

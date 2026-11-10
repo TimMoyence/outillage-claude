@@ -32,9 +32,11 @@ Lis `git diff origin/main...HEAD` en entier, fichiers non suivis compris : fonct
 
 **Forme dictée par le contenu**
 
-- Autant de points numérotés que de vraies histoires, jamais un nombre fixé d'avance. Le ménage tient dans un texte court rangé par écran. Chaque geste est décrit.
-- « En bref » ouvre le mail : la lecture en trente secondes qui situe un néophyte, puis une phrase « en 1 s » propre à cette mise en production.
-- Pour chaque histoire, nomme d'abord l'objet qui change (un graphique, une fenêtre, un tableau, un parcours, un chiffre). L'image le redessine avec la géométrie, les libellés et les couleurs de l'écran réel, lus dans le composant et sa feuille de style ; jamais une tuile générique ni un avant / après plaqué. Un retrait se montre barré à l'endroit exact où il vivait.
+- Le mail est la newsletter de cette mise en production : il fait voir et comprendre ce qui s'est passé.
+- Autant de points numérotés que de vraies histoires, jamais un nombre fixé d'avance. Le ménage tient dans un texte court rangé par écran. Chaque geste est décrit, et chaque ligne de l'inventaire s'explique dans le mail : ce qui a changé et ce que le lecteur en verra.
+- « En bref » ouvre le mail : le résumé de tout ce qui suit, la lecture en trente secondes qui situe un néophyte, puis une phrase « en 1 s » propre à cette mise en production.
+- Pour chaque histoire, nomme d'abord l'objet qui change (un graphique, une fenêtre, un tableau, un parcours, un chiffre, un schéma). L'image le redessine avec la géométrie, les libellés et les couleurs de l'écran réel, lus dans le composant et sa feuille de style ; jamais une tuile générique ni un avant / après plaqué. Un retrait se montre barré à l'endroit exact où il vivait.
+- Invente la représentation qui fait comprendre le changement en un regard : la barre qui passe au rouge, la colonne qui trouve son année, le bouton qui disparaît.
 - Le mail se termine sur ce que le lecteur a réellement à faire : un geste précis, ou rien.
 
 **Lecture, pour qui ne connaît pas le logiciel**
